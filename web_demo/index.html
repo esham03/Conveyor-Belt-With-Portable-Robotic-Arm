@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conveyor Belt with Portable Robotic Arm — Industrial Automation Console</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="top-nav">
+    <div class="nav-brand">
+      <div class="brand-badge">GPP 2024</div>
+      <div class="brand-text">
+        <h1>CONVEYOR BELT WITH PORTABLE ROBOTIC ARM</h1>
+        <span class="sub-label">Government Polytechnic Panaji • Electronics Engineering • Demonstration & Monitoring Console</span>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <div class="badge-sim" title="Simulation / Demonstration Environment">
+        <span class="indicator-dot"></span> SIMULATION / DEMO MODE
+      </div>
+      <button id="btnMasterEStop" class="btn-estop">
+        <span class="estop-icon">🛑</span> EMERGENCY STOP
+      </button>
+    </div>
+  </header>
+
+  <!-- Subsystem Telemetry Pills -->
+  <div class="telemetry-bar">
+    <div class="tel-pill online" id="statBase">
+      <span class="dot"></span> <strong>BASE (Uno #1):</strong> <span id="txtBaseState">STOPPED (Speed: 204)</span>
+    </div>
+    <div class="tel-pill online" id="statArm">
+      <span class="dot"></span> <strong>ARM (Uno #2):</strong> <span id="txtArmState">IDLE (Gripper: OPEN)</span>
+    </div>
+    <div class="tel-pill online" id="statSort">
+      <span class="dot"></span> <strong>SORT CONV (Uno #3):</strong> <span id="txtSortState">CRUISING (IR: CLEAR)</span>
+    </div>
+    <div class="tel-pill online" id="stat3Conv">
+      <span class="dot"></span> <strong>3-CONV (Uno #4):</strong> <span id="txt3ConvState">STAGE 1-3 READY</span>
+    </div>
+    <div class="tel-pill online" id="statCam">
+      <span class="dot"></span> <strong>ESP32-CAM:</strong> <span id="txtCamState">STREAM ONLINE (QVGA 25fps)</span>
+    </div>
+  </div>
+
+  <!-- Main Grid Layout -->
+  <main class="console-body">
+    <!-- Left Column: Interactive Visual Automation Cell Simulation -->
+    <section class="panel sim-panel">
+      <div class="panel-header">
+        <h2>PHYSICAL AUTOMATION CELL SIMULATION</h2>
+        <div class="sim-actions">
+          <button class="btn-sm" id="btnSpawnRed">🔴 Spawn Red</button>
+          <button class="btn-sm" id="btnSpawnGreen">🟢 Spawn Green</button>
+          <button class="btn-sm" id="btnSpawnBlue">🔵 Spawn Blue</button>
+          <button class="btn-sm" id="btnSpawnRandom">🎲 Random</button>
+          <button class="btn-sm btn-accent" id="btnRunSortCycle">▶ Auto Cycle</button>
+        </div>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="simCanvas" width="880" height="480"></canvas>
+      </div>
+      <div class="sim-legend">
+        <span><span class="legend-box" style="background:#ff3366;"></span> Red Bin (45°)</span>
+        <span><span class="legend-box" style="background:#00e676;"></span> Green Bin (90°)</span>
+        <span><span class="legend-box" style="background:#00e5ff;"></span> Blue Bin (135°)</span>
+        <span><span class="legend-box" style="background:#ffd600;"></span> IR Beam Gate</span>
+        <span><span class="legend-box" style="background:#9c27b0;"></span> TCS3200 Optical Head</span>
+      </div>
+    </section>
+
+    <!-- Right Column: Subsystem Control Decks -->
+    <section class="panel control-panel">
+      <!-- Tabs Header -->
+      <div class="tabs-header">
+        <button class="tab-btn active" data-tab="tabBase">Robot Base</button>
+        <button class="tab-btn" data-tab="tabArm">Robotic Arm</button>
+        <button class="tab-btn" data-tab="tabConveyor">Conveyors</button>
+        <button class="tab-btn" data-tab="tabCamera">Camera</button>
+        <button class="tab-btn" data-tab="tabPins">Pin Map</button>
+      </div>
+
+      <!-- Tab 1: Robot Base Controller -->
+      <div class="tab-content active" id="tabBase">
+        <h3>Subsystem 1: Portable Robotic Base (L298N + 4 BO Motors)</h3>
+        <p class="desc">Bluetooth Classic (HC-05 #1) 9600-8-N-1 Serial Control</p>
+        
+        <div class="dpad-container">
+          <div class="dpad-grid">
+            <button class="dpad-btn" data-cmd="G">↖ G<br><small>FWD-L</small></button>
+            <button class="dpad-btn btn-primary" data-cmd="F">▲ F<br><small>FORWARD</small></button>
+            <button class="dpad-btn" data-cmd="I">↗ I<br><small>FWD-R</small></button>
+            
+            <button class="dpad-btn" data-cmd="L">◀ L<br><small>LEFT</small></button>
+            <button class="dpad-btn btn-stop" data-cmd="S">■ S<br><small>BRAKE</small></button>
+            <button class="dpad-btn" data-cmd="R">▶ R<br><small>RIGHT</small></button>
+            
+            <button class="dpad-btn" data-cmd="H">↙ H<br><small>BCK-L</small></button>
+            <button class="dpad-btn" data-cmd="B">▼ B<br><small>BACK</small></button>
+            <button class="dpad-btn" data-cmd="J">↘ J<br><small>BCK-R</small></button>
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <label>Motor Speed (PWM): <span id="lblBaseSpeed">204</span> (80%)</label>
+          <input type="range" id="rngBaseSpeed" min="0" max="255" value="204">
+        </div>
+      </div>
+
+      <!-- Tab 2: Robotic Arm Controller -->
+      <div class="tab-content" id="tabArm">
+        <h3>Subsystem 2: 4-DOF Robotic Arm (L293D Shield)</h3>
+        <p class="desc">Bluetooth Classic (HC-05 #2) 9600-8-N-1 Serial Control</p>
+        
+        <div class="joint-list">
+          <div class="joint-item">
+            <div class="joint-info">
+              <strong>Joint 1: Waist Turret (M1)</strong>
+              <small>30 RPM Center-Shaft DC Motor</small>
+            </div>
+            <div class="joint-btns">
+              <button class="btn-cmd" data-cmd="L">◀ Left (L)</button>
+              <button class="btn-cmd" data-cmd="R">Right (R) ▶</button>
+            </div>
+          </div>
+
+          <div class="joint-item">
+            <div class="joint-info">
+              <strong>Joint 2: Shoulder Elevation (M2)</strong>
+              <small>10 RPM 12V High-Torque Gear Motor</small>
+            </div>
+            <div class="joint-btns">
+              <button class="btn-cmd" data-cmd="U">▲ Elevate Up (U)</button>
+              <button class="btn-cmd" data-cmd="D">▼ Lower Down (D)</button>
+            </div>
+          </div>
+
+          <div class="joint-item">
+            <div class="joint-info">
+              <strong>Joint 3: Elbow Pitch (M3)</strong>
+              <small>10 RPM 12V High-Torque Gear Motor</small>
+            </div>
+            <div class="joint-btns">
+              <button class="btn-cmd" data-cmd="T">▲ Top Up (T)</button>
+              <button class="btn-cmd" data-cmd="t">▼ Top Down (t)</button>
+            </div>
+          </div>
+
+          <div class="joint-item">
+            <div class="joint-info">
+              <strong>End-Effector: Gripper (M4/Servo)</strong>
+              <small>Dual Mode: DC Motor / MG946R Servo</small>
+            </div>
+            <div class="joint-btns">
+              <button class="btn-cmd" data-cmd="O">🔓 Open (O)</button>
+              <button class="btn-cmd" data-cmd="C">🔒 Close (C)</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-block btn-stop" data-cmd="S" style="margin-top:12px;">■ HALT ALL ARM JOINTS (S)</button>
+      </div>
+
+      <!-- Tab 3: Conveyor Systems -->
+      <div class="tab-content" id="tabConveyor">
+        <h3>Subsystems 3 & 4: Material Handling & Sorting</h3>
+        <div class="conveyor-card">
+          <h4>Subsystem 3: Optical Sorting Conveyor</h4>
+          <p class="desc">IR Gate (Pin 7) + TCS3200 RGB + MG946R Servo Diverter (Pin 10)</p>
+          <div class="btn-group">
+            <button class="btn-sm" id="btnConvResume">▶ Resume Belt</button>
+            <button class="btn-sm btn-stop" id="btnConvPause">⏸ Pause Belt</button>
+            <button class="btn-sm" id="btnConvCal">⚙ Calibrate TCS3200</button>
+          </div>
+          <div class="telemetry-readout">
+            <div>IR Sensor: <span id="lblIrStatus" class="highlight">CLEAR</span></div>
+            <div>Detected Color: <span id="lblColorStatus" class="highlight">NONE</span></div>
+            <div>Diverter Angle: <span id="lblServoAngle" class="highlight">0° (Neutral)</span></div>
+          </div>
+        </div>
+
+        <div class="conveyor-card" style="margin-top:12px;">
+          <h4>Subsystem 4: 3-Stage Transfer Conveyor</h4>
+          <p class="desc">Non-Blocking FSM Logic • 3x Independent IR Gates + 3x BO Motors</p>
+          <div class="transfer-stages">
+            <div class="stage-badge" id="badgeStage1">Stage 1: Infeed (5s)</div>
+            <div class="stage-badge" id="badgeStage2">Stage 2: Mid-Transfer (5s)</div>
+            <div class="stage-badge" id="badgeStage3">Stage 3: Outfeed (5s)</div>
+          </div>
+          <div class="btn-group" style="margin-top:8px;">
+            <button class="btn-sm" id="btnPulseConv1">Trigger IR 1</button>
+            <button class="btn-sm" id="btnPulseConv2">Trigger IR 2</button>
+            <button class="btn-sm" id="btnPulseConv3">Trigger IR 3</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 4: ESP32-CAM Viewfinder -->
+      <div class="tab-content" id="tabCamera">
+        <h3>Subsystem 5: ESP32-CAM Surveillance Feed</h3>
+        <p class="desc">AI-Thinker ESP32-S + OV2640 2MP • HTTP MJPEG Stream</p>
+        
+        <div class="cam-preview-box">
+          <canvas id="camCanvas" width="320" height="240"></canvas>
+          <div class="cam-overlay">
+            <span>● LIVE • 25 FPS</span>
+            <span id="camTimestamp">00:00:00</span>
+          </div>
+        </div>
+
+        <div class="cam-config">
+          <label>ESP32-CAM Base URL:</label>
+          <div class="input-row">
+            <input type="text" id="txtCamUrl" value="http://192.168.4.1">
+            <button class="btn-sm" id="btnTestCamUrl">Connect</button>
+          </div>
+          <div class="btn-group" style="margin-top:8px;">
+            <button class="btn-sm" id="btnToggleFlash">💡 Toggle LED Flash</button>
+            <button class="btn-sm" id="btnCaptureSnap">📸 Snapshot</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 5: Pin Map & Hardware Conflicts -->
+      <div class="tab-content" id="tabPins">
+        <h3>Conflict-Free Production Pin Map</h3>
+        <div class="pin-table-wrapper">
+          <table class="pin-table">
+            <thead>
+              <tr>
+                <th>Subsystem</th>
+                <th>Arduino Pin</th>
+                <th>Connected Target</th>
+                <th>Resolution from PDF Defect</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Uno #1 (Base)</td>
+                <td>Pins 5, 6, 10, 11</td>
+                <td>L298N IN1, IN2, IN3, IN4</td>
+                <td>Fixed broken <code>#define in1 to pin 5</code></td>
+              </tr>
+              <tr>
+                <td>Uno #2 (Arm)</td>
+                <td>Shield M1..M4 / Pin 10</td>
+                <td>Waist, Shoulder, Elbow, Gripper</td>
+                <td>Corrected <code>top up()</code> & <code>'TU'</code> literals</td>
+              </tr>
+              <tr class="highlight-row">
+                <td>Uno #3 (Sort)</td>
+                <td>Pin 9 (ENA) & Pin 10 (Servo)</td>
+                <td>L298N Speed & MG946R Diverter</td>
+                <td><strong>RESOLVED PIN 9 CONFLICT:</strong> Servo moved to Pin 10</td>
+              </tr>
+              <tr class="highlight-row">
+                <td>Uno #3 (Sort)</td>
+                <td>S0..S3, OUT (Pins 4,5,6,8,12)</td>
+                <td>TCS3200 Optical Sensor</td>
+                <td><strong>RESOLVED SENSOR LOGIC:</strong> True pulse frequency</td>
+              </tr>
+              <tr class="highlight-row">
+                <td>Uno #4 (3-Conv)</td>
+                <td>Pins A0, A1, A2</td>
+                <td>IR Sensors 1, 2, 3</td>
+                <td><strong>RESOLVED SHIELD CONFLICT:</strong> Removed from pins 6 & 10</td>
+              </tr>
+              <tr>
+                <td>ESP32-CAM</td>
+                <td>5V, GND, GPIO 4 (Flash)</td>
+                <td>Dedicated 5V 2A Buck Regulator</td>
+                <td>Separated from L298N 78M05 thermal overload</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Serial Terminal Console -->
+  <footer class="terminal-footer">
+    <div class="terminal-header">
+      <span>UART SERIAL MONITOR (9600-8-N-1)</span>
+      <div class="term-tools">
+        <span id="termPacketCount">Packets: 0</span>
+        <button id="btnClearTerm" class="btn-xs">Clear Log</button>
+      </div>
+    </div>
+    <div class="terminal-log" id="termLog">
+      <div class="log-line info">[00:00:00.0] <SYSTEM> Automation console loaded. Connected to Simulated Microcontroller Bridge.</div>
+      <div class="log-line success">[00:00:00.1] <BASE> Safe boot initialized: All motors de-energized. Speed = 204.</div>
+      <div class="log-line success">[00:00:00.2] <ARM> Safe boot initialized: Joint timeouts active. Gripper mode = DC/Servo.</div>
+      <div class="log-line success">[00:00:00.3] <SORT_CONV> Conflict-free pin map verified: Servo on Pin 10, Motor on Pin 9.</div>
+      <div class="log-line success">[00:00:00.4] <3_CONV> Non-blocking FSM running: Parallel transfer active.</div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

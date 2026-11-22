@@ -1,0 +1,37 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor & IDE configs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs
+*.log
+
+# Flutter & Dart Build Artefacts
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub/
+.pub-cache/
+build/
+coverage/
+**/android/.gradle/
+**/android/local.properties
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+
+# ESP32-CAM Local Credentials
+# Users copy secrets.example.h to secrets.h for local deployment
+firmware/esp32_cam/secrets.h

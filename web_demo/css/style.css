@@ -1,0 +1,650 @@
+/* ==========================================================================
+   Industrial Automation Web Console Stylesheet
+   Theme: Control Room Graphite / Slate with Cyan & Alert Status Accents
+   ========================================================================== */
+
+:root {
+  --bg-main: #0a0e17;
+  --bg-card: #121824;
+  --bg-card-elevated: #1a2233;
+  --bg-card-hover: #222d42;
+  --border-subtle: #25334a;
+  --border-accent: #00e5ff;
+  
+  --color-cyan: #00e5ff;
+  --color-cyan-dim: #00838f;
+  --color-blue: #0288d1;
+  --color-green: #00e676;
+  --color-amber: #ffb300;
+  --color-red: #ff1744;
+  
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* --- Top Navigation --- */
+.top-nav {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-badge {
+  background: var(--color-cyan);
+  color: var(--bg-main);
+  font-weight: 800;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.brand-text h1 {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-primary);
+}
+
+.brand-text .sub-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.badge-sim {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid var(--color-cyan-dim);
+  color: var(--color-cyan);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.indicator-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--color-cyan);
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.btn-estop {
+  background: linear-gradient(135deg, #ff1744, #b71c1c);
+  color: #fff;
+  border: 2px solid #ff5252;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 8px 18px;
+  border-radius: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 0 16px rgba(255, 23, 68, 0.4);
+  transition: all 0.2s ease;
+}
+
+.btn-estop:hover {
+  box-shadow: 0 0 24px rgba(255, 23, 68, 0.7);
+  transform: translateY(-1px);
+}
+
+.btn-estop.active {
+  background: var(--color-amber);
+  border-color: #ffd740;
+  color: #000;
+  box-shadow: 0 0 24px rgba(255, 179, 0, 0.8);
+}
+
+/* --- Telemetry Strip --- */
+.telemetry-bar {
+  background: #0d121c;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 8px 24px;
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.tel-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  padding: 4px 10px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+}
+
+.tel-pill.online .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-green);
+  box-shadow: 0 0 6px var(--color-green);
+}
+
+/* --- Main Layout --- */
+.console-body {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 20px;
+  padding: 20px 24px;
+  flex: 1;
+}
+
+@media (max-width: 1024px) {
+  .console-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.panel-header h2 {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--color-cyan);
+}
+
+/* --- Simulation Canvas & Legend --- */
+.canvas-wrapper {
+  background: #06090e;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+#simCanvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sim-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.sim-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.legend-box {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* --- Control Panel & Tabs --- */
+.tabs-header {
+  display: flex;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 16px;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  color: var(--color-cyan);
+  border-bottom-color: var(--color-cyan);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.tab-content h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.tab-content .desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+/* --- D-Pad Layout --- */
+.dpad-container {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.dpad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 76px);
+  gap: 8px;
+}
+
+.dpad-btn {
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  border-radius: 10px;
+  height: 64px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.dpad-btn small {
+  font-size: 9px;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+}
+
+.dpad-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+}
+
+.dpad-btn.btn-primary {
+  border-color: var(--color-cyan-dim);
+}
+
+.dpad-btn.btn-stop {
+  background: rgba(255, 23, 68, 0.2);
+  border-color: var(--color-red);
+  color: var(--color-red);
+}
+
+.slider-row {
+  margin-top: 16px;
+  background: var(--bg-card-elevated);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+}
+
+.slider-row label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.slider-row input[type="range"] {
+  width: 100%;
+  accent-color: var(--color-cyan);
+}
+
+/* --- Robotic Arm Joints --- */
+.joint-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.joint-item {
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.joint-info strong {
+  display: block;
+  font-size: 12px;
+}
+
+.joint-info small {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.joint-btns {
+  display: flex;
+  gap: 8px;
+}
+
+/* --- Buttons Common --- */
+.btn-sm {
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-sm:hover {
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+}
+
+.btn-sm.btn-accent {
+  background: var(--color-cyan);
+  color: var(--bg-main);
+  border-color: var(--color-cyan);
+}
+
+.btn-cmd {
+  background: #1e293b;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-cmd:hover {
+  background: var(--color-cyan-dim);
+  color: #fff;
+}
+
+.btn-block {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-stop {
+  background: rgba(255, 23, 68, 0.2);
+  border: 1px solid var(--color-red);
+  color: var(--color-red);
+}
+
+.btn-stop:hover {
+  background: var(--color-red);
+  color: #fff;
+}
+
+/* --- Conveyor Cards --- */
+.conveyor-card {
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.conveyor-card h4 {
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.telemetry-readout {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  font-size: 11px;
+}
+
+.telemetry-readout .highlight {
+  color: var(--color-cyan);
+  font-weight: 700;
+}
+
+.transfer-stages {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.stage-badge {
+  flex: 1;
+  background: #0d121c;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 6px;
+  font-size: 11px;
+  text-align: center;
+}
+
+.stage-badge.active {
+  border-color: var(--color-green);
+  color: var(--color-green);
+  background: rgba(0, 230, 118, 0.1);
+}
+
+/* --- Camera Preview Box --- */
+.cam-preview-box {
+  background: #000;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  max-width: 320px;
+  margin: 0 auto 12px auto;
+}
+
+#camCanvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.cam-overlay {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--color-green);
+  background: rgba(0,0,0,0.6);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.cam-config {
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.cam-config label {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.input-row input {
+  flex: 1;
+  background: #0d121c;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+/* --- Pin Table --- */
+.pin-table-wrapper {
+  overflow-x: auto;
+}
+
+.pin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.pin-table th, .pin-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.pin-table th {
+  background: var(--bg-card-elevated);
+  color: var(--text-secondary);
+}
+
+.pin-table tr.highlight-row {
+  background: rgba(0, 229, 255, 0.05);
+}
+
+/* --- Terminal Footer --- */
+.terminal-footer {
+  background: #06090e;
+  border-top: 1px solid var(--border-subtle);
+  padding: 10px 24px;
+}
+
+.terminal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.btn-xs {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.terminal-log {
+  height: 90px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+}
+
+.log-line {
+  color: var(--text-primary);
+}
+
+.log-line.info { color: var(--color-cyan); }
+.log-line.success { color: var(--color-green); }
+.log-line.warning { color: var(--color-amber); }
+.log-line.error { color: var(--color-red); }
